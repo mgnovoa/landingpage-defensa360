@@ -8,7 +8,7 @@
     "dev": "gulp dev",
     "build": "gulp build",
     "deploy": "gulp deploy",
-    "start": "http-server ./theme -p 8080", // O "serve -s theme -l 8080"
+    "start": "http-server ./theme -p 8080", 
     "format": "prettier -w ./src",
     "remove-darkmode": "node scripts/removeDarkMode.js && yarn format"
   },

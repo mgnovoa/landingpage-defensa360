@@ -13,7 +13,7 @@ const wrapper = require("gulp-wrapper");
 const comments = require("gulp-header-comment");
 const template = require("gulp-template");
 const theme = require("./src/theme.json");
-const node_env = process.argv.slice(2)[0];
+const node_env = process.env.NODE_ENV || 'development'; // Cambia esto si estás pasando el entorno como argumento
 const headerComments = `WEBSITE: https://themefisher.com
                         TWITTER: https://twitter.com/themefisher
                         FACEBOOK: https://facebook.com/themefisher
@@ -46,7 +46,7 @@ gulp.task("pages", function () {
         header:
           "<!DOCTYPE html>\n<html lang=\"zxx\">\n@@include('head.html')\n@@include('header.html')\n<body>",
         footer:
-          node_env === "dev"
+          node_env === "development"
             ? "@@include('components/tw-size-indicator.html')\n @@include('footer.html')\n</body>\n</html>"
             : "@@include('footer.html')\n</body>\n</html>",
       })
@@ -65,9 +65,7 @@ gulp.task("pages", function () {
     .pipe(comments(headerComments))
     .pipe(gulp.dest(path.build.dir))
     .pipe(
-      bs.reload({
-        stream: true,
-      })
+      node_env === "development" ? bs.reload({ stream: true }) : gutil.noop()
     );
 });
 
@@ -86,9 +84,7 @@ gulp.task("styles", function () {
     .pipe(comments(headerComments))
     .pipe(gulp.dest(path.build.dir + "styles/"))
     .pipe(
-      bs.reload({
-        stream: true,
-      })
+      node_env === "development" ? bs.reload({ stream: true }) : gutil.noop()
     );
 });
 
@@ -102,9 +98,7 @@ gulp.task("scripts", function () {
     .pipe(comments(headerComments))
     .pipe(gulp.dest(path.build.dir + "scripts/"))
     .pipe(
-      bs.reload({
-        stream: true,
-      })
+      node_env === "development" ? bs.reload({ stream: true }) : gutil.noop()
     );
 });
 
@@ -114,9 +108,7 @@ gulp.task("plugins", function () {
     .src(path.src.plugins)
     .pipe(gulp.dest(path.build.dir + "plugins/"))
     .pipe(
-      bs.reload({
-        stream: true,
-      })
+      node_env === "development" ? bs.reload({ stream: true }) : gutil.noop()
     );
 });
 
@@ -152,11 +144,13 @@ gulp.task(
     "plugins",
     "public",
     gulp.parallel("watch", function () {
-      bs.init({
-        server: {
-          baseDir: path.build.dir,
-        },
-      });
+      if (node_env === "development") {
+        bs.init({
+          server: {
+            baseDir: path.build.dir,
+          },
+        });
+      }
     })
   )
 );
